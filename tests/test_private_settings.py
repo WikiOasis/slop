@@ -17,5 +17,5 @@ class PrivateSettingsTest(Support):
     def test_changed_source_is_copied_again(self) -> None:
         self.slop("deploy", "-y", "-m", "first")
         self.privateSettings.write_text("<?php\n$wgSecretKey = 'rotated';\n")
-        self.slop("deploy", "config", "-y", "-m", "rotate key")
+        self.slop("deploy", "config", "--resync", "-y", "-m", "rotate key")
         self.assertIn("rotated", self.live("config/PrivateSettings.php"))

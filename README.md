@@ -138,6 +138,8 @@ write-enabled deploy key.
 - **Deploys:** a successful deploy commits and pushes `state/<project>.yaml` (the exact commits, patches and lockfile
   that are live). A failed one leaves your config as it was, so you can fix it and retry.
 - **IDE:** editing the files and pushing works the same way; the next command pulls them.
+- **Private settings:** a mediawiki project's `private-settings: <path>` copies that file into
+  `config/PrivateSettings.php` on every build; `private-settings: false` turns the step off.
 
 ### Running it
 

@@ -177,9 +177,7 @@ class Repo(Command):
         target = ""
         if project.type == "mediawiki":
             target = f"{name} " if name in ("core", "config") else f"extensions {name} "
-        runner.ctx.console.write(
-            f"  <dim>deploy it with `slop deploy {target}-m ...`</dim>"
-        )
+        runner.ctx.console.write(f"  <dim>deploy it with `slop deploy {target}-m ...`</dim>")
 
     def list(self, args: argparse.Namespace, console: Console) -> None:
         config = Reader.config(args)

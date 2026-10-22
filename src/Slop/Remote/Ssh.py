@@ -68,6 +68,7 @@ class Ssh:
             "--human-readable",
             "--stats",
             "--no-inc-recursive",
+            "--modify-window=-1",
         ]
         if checksum:
             argv.append("--checksum")

@@ -400,7 +400,7 @@ class Git:
     def git(
         self, repoDir: Path, *args: str | Path, check: bool = True, readOnly: bool = False, env: dict | None = None
     ) -> subprocess.CompletedProcess:
-        # Trust the checkout per command, so one owned by another user (e.g. made by root) still works
-        # without writing to the global git config.
-        trust = ["-c", f"safe.directory={repoDir}"]
-        return self.ctx.run(["git", *trust, "-C", repoDir, *args], check=check, mutates=not readOnly, env=env)
+        trustCheckoutOwnedByAnyone = ["-c", f"safe.directory={repoDir}"]
+        return self.ctx.run(
+            ["git", *trustCheckoutOwnedByAnyone, "-C", repoDir, *args], check=check, mutates=not readOnly, env=env
+        )

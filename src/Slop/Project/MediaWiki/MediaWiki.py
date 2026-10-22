@@ -90,7 +90,6 @@ class MediaWiki(Project):
         self.allVersions = {str(v): self.loadVersion(str(v), s or {}) for v, s in versionSpecs.items()}
         self.versions = list(self.allVersions.values())
 
-        # private-settings: <path> copies that file into config/PrivateSettings.php; false turns the step off
         privateSettings = spec.get("private-settings", self.DEFAULT_PRIVATE_SETTINGS)
         self.privateSettings = None if privateSettings is False else Path(str(privateSettings))
 

@@ -12,7 +12,9 @@ class PrivateSettingsTest(Support):
     def test_deploy_copies_private_settings_into_config(self) -> None:
         self.slop("deploy", "-y", "-m", "first")
         self.assertIn("$wgSecretKey = 'test'", self.live("config/PrivateSettings.php"))
-        self.assertIn("$wgSecretKey = 'test'", (self.tmp / "srv" / "build" / "config" / "PrivateSettings.php").read_text())
+        self.assertIn(
+            "$wgSecretKey = 'test'", (self.tmp / "srv" / "build" / "config" / "PrivateSettings.php").read_text()
+        )
 
     def test_changed_source_is_copied_again(self) -> None:
         self.slop("deploy", "-y", "-m", "first")

@@ -98,6 +98,8 @@ class Support(unittest.TestCase):
                 "initialise/entrypoints/api.php": "<?php\n",
             },
         )
+        self.privateSettings = self.tmp / "PrivateSettings.php"
+        self.privateSettings.write_text("<?php\n$wgSecretKey = 'test';\n")
         conf = self.tmp / "conf"
         (conf / "mediawiki" / "patches").mkdir(parents=True)
         self.dump(
@@ -114,9 +116,10 @@ class Support(unittest.TestCase):
                         "type": "mediawiki",
                         "path": "build",
                         "mw-config": {"url": self.url("mw-config"), "branch": "main"},
+                        "private-settings": str(self.privateSettings),
                         "versions": {"1.46": {"core": {"url": self.url("core")}}},
                         "entrypoints": ["index.php", "api.php"],
-                        "stages": {"build": ["layout", "sync", "patches", "links"]},
+                        "stages": {"build": ["layout", "sync", "private-settings", "patches", "links"]},
                         "deploy": {
                             "path": str(self.tmp / "live"),
                             "roles": ["canary", "app"],

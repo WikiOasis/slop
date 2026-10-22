@@ -20,11 +20,15 @@ class MediaWiki(Project):
     VERSION_TOKEN = "_version_"
 
     STAGES = {
-        "build": ["layout", "sync", "patches", "composer", "links", "scripts"],
+        "build": ["layout", "sync", "private-settings", "patches", "composer", "links", "scripts"],
     }
     TARGETS = {
         "all": (None, False, "everything (the whole build stage)"),
-        "config": (["mw-config", "links"], False, "mw-config, then refresh symlinks"),
+        "config": (
+            ["mw-config", "private-settings", "links"],
+            False,
+            "mw-config, PrivateSettings.php, then refresh symlinks",
+        ),
         "core": (["core", "patches", "composer"], False, "MediaWiki core, its patches, then composer"),
         "extensions": (
             ["extensions", "patches", "composer"],
@@ -55,6 +59,8 @@ class MediaWiki(Project):
         "scripts": ["scripts"],
     }
 
+    DEFAULT_PRIVATE_SETTINGS = "/srv/PrivateSettings.php"
+
     DEFAULT_ENTRYPOINTS = [
         "api.php",
         "img_auth.php",
@@ -83,6 +89,10 @@ class MediaWiki(Project):
             raise SlopError(f"{where}: no versions listed")
         self.allVersions = {str(v): self.loadVersion(str(v), s or {}) for v, s in versionSpecs.items()}
         self.versions = list(self.allVersions.values())
+
+        # private-settings: <path> copies that file into config/PrivateSettings.php; false turns the step off
+        privateSettings = spec.get("private-settings", self.DEFAULT_PRIVATE_SETTINGS)
+        self.privateSettings = None if privateSettings is False else Path(str(privateSettings))
 
         self.entrypoints = list(spec.get("entrypoints") or self.DEFAULT_ENTRYPOINTS)
         self.composerAllowPlugins = {

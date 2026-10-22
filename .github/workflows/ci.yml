@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: pip install ruff==0.14.0
+      - run: ruff check src tests scripts
+      - run: ruff format --check src tests scripts
+      - run: python scripts/check_no_comments.py
+
+  prettier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npx --yes prettier@3.6.2 --check .
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: sudo apt-get install -y rsync
+      - run: pip install -e .
+      - run: python -m compileall -q src
+      - name: every command has working help
+        run: |
+          for command in $(python -c "from Slop.Command.CommandLoader import CommandLoader; print(' '.join(CommandLoader.all()))"); do
+            slop "$command" --help > /dev/null
+          done
+      - name: tests
+        run: PYTHONPATH=src:tests python -m unittest discover -s tests -t tests -v

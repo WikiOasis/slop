@@ -37,6 +37,20 @@ class GitTest(Support):
         git.sync(self.repo, self.dest, ".")
         self.assertNotEqual(git.revParse(self.dest, "HEAD"), first)
 
+    def test_checkout_owned_by_another_user_is_trusted(self) -> None:
+        git = Git(self.context())
+        git.sync(self.repo, self.dest, ".")
+        seen = []
+        real = git.ctx.run
+
+        def spy(argv, *a, **kw):
+            seen.append(argv)
+            return real(argv, *a, **kw)
+
+        git.ctx.run = spy
+        git.git(self.dest, "status", readOnly=True)
+        self.assertIn(f"safe.directory={self.dest}", seen[-1])
+
     def test_local_edits_block_sync(self) -> None:
         git = Git(self.context())
         git.sync(self.repo, self.dest, ".")

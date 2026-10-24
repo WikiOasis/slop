@@ -100,6 +100,8 @@ class Support(unittest.TestCase):
         )
         self.privateSettings = self.tmp / "PrivateSettings.php"
         self.privateSettings.write_text("<?php\n$wgSecretKey = 'test';\n")
+        self.oauthKey = self.tmp / "OAuth.key"
+        self.oauthKey.write_text("-----BEGIN PRIVATE KEY-----\ntest\n")
         conf = self.tmp / "conf"
         (conf / "mediawiki" / "patches").mkdir(parents=True)
         self.dump(
@@ -117,9 +119,10 @@ class Support(unittest.TestCase):
                         "path": "build",
                         "mw-config": {"url": self.url("mw-config"), "branch": "main"},
                         "private-settings": str(self.privateSettings),
+                        "oauth-key": str(self.oauthKey),
                         "versions": {"1.46": {"core": {"url": self.url("core")}}},
                         "entrypoints": ["index.php", "api.php"],
-                        "stages": {"build": ["layout", "sync", "private-settings", "patches", "links"]},
+                        "stages": {"build": ["layout", "sync", "private-settings", "oauth-key", "patches", "links"]},
                         "deploy": {
                             "path": str(self.tmp / "live"),
                             "roles": ["canary", "app"],

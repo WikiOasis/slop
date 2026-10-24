@@ -20,14 +20,14 @@ class MediaWiki(Project):
     VERSION_TOKEN = "_version_"
 
     STAGES = {
-        "build": ["layout", "sync", "private-settings", "patches", "composer", "links", "scripts"],
+        "build": ["layout", "sync", "private-settings", "oauth-key", "patches", "composer", "links", "scripts"],
     }
     TARGETS = {
         "all": (None, False, "everything (the whole build stage)"),
         "config": (
-            ["mw-config", "private-settings", "links"],
+            ["mw-config", "private-settings", "oauth-key", "links"],
             False,
-            "mw-config, PrivateSettings.php, then refresh symlinks",
+            "mw-config, PrivateSettings.php, OAuth.key, then refresh symlinks",
         ),
         "core": (["core", "patches", "composer"], False, "MediaWiki core, its patches, then composer"),
         "extensions": (
@@ -60,6 +60,7 @@ class MediaWiki(Project):
     }
 
     DEFAULT_PRIVATE_SETTINGS = "/srv/PrivateSettings.php"
+    DEFAULT_OAUTH_KEY = "/srv/OAuth.key"
 
     DEFAULT_ENTRYPOINTS = [
         "api.php",
@@ -92,6 +93,8 @@ class MediaWiki(Project):
 
         privateSettings = spec.get("private-settings", self.DEFAULT_PRIVATE_SETTINGS)
         self.privateSettings = None if privateSettings is False else Path(str(privateSettings))
+        oauthKey = spec.get("oauth-key", self.DEFAULT_OAUTH_KEY)
+        self.oauthKey = None if oauthKey is False else Path(str(oauthKey))
 
         self.entrypoints = list(spec.get("entrypoints") or self.DEFAULT_ENTRYPOINTS)
         self.composerAllowPlugins = {

@@ -140,6 +140,8 @@ write-enabled deploy key.
 - **IDE:** editing the files and pushing works the same way; the next command pulls them.
 - **Private settings:** a mediawiki project's `private-settings: <path>` copies that file into
   `config/PrivateSettings.php` on every build; `private-settings: false` turns the step off.
+- **OAuth key:** likewise `oauth-key: <path>` (default `/srv/OAuth.key`) copies that file into `config/OAuth.key`;
+  `oauth-key: false` turns the step off.
 
 ### Running it
 
